@@ -1,9 +1,15 @@
 import config from "config";
+import crypto from "crypto";
 
 import { CookieOptions, Request, Response, NextFunction } from "express";
-import { CreateUserInput, LoginUserInput } from "../schemas/user.schema";
+import {
+  CreateUserInput,
+  LoginUserInput,
+  VerifyEmailInput,
+} from "../schemas/user.schema";
 import {
   createUser,
+  findUser,
   findUserByEmail,
   findUserById,
   signTokens,
@@ -12,9 +18,10 @@ import { User } from "../entities/user.entity";
 import AppError from "../utils/appError";
 import { signJwt, verifyJwt } from "../middleware/jwt";
 import redisClient from "../utils/connectRedis";
+import Email from "../utils/email";
 
 const cookiesOptions: CookieOptions = {
-  httpOnly: true,
+  httpOnly: false,
   sameSite: "lax",
 };
 
@@ -44,16 +51,39 @@ export const registerUserHandler = async (
 ) => {
   try {
     const { name, email, password } = req.body;
-    const user = await createUser({
+    const newUser = await createUser({
       name,
       email: email.toLocaleLowerCase(),
       password,
     });
 
-    res.status(201).json({
-      status: "success",
-      data: { user },
-    });
+    const { hashedVerificationCode, verificationCode } =
+      User.createVerificationCode();
+
+    newUser.verificationCode = hashedVerificationCode;
+    await newUser.save();
+
+    const redirectUrl = `${config.get<string>(
+      "origin"
+    )}/verifyemail/${verificationCode}`;
+
+    try {
+      await new Email(newUser, redirectUrl).sendVerificationCode();
+
+      res.status(201).json({
+        status: "success",
+        message:
+          "An email with a verification code has been sent to your email",
+      });
+    } catch (error) {
+      newUser.verificationCode = null;
+      await newUser.save();
+
+      return res.status(500).json({
+        status: "error",
+        message: "There was an error sending email, please try again",
+      });
+    }
   } catch (err: any) {
     if (err.code === "23505") {
       return res.status(409).json({
@@ -79,13 +109,17 @@ export const loginUserHandler = async (
       return next(new AppError(400, "Invalid email or password"));
     }
 
+    if (!user.verify) {
+      return next(new AppError(400, "You are not verified"));
+    }
+
     const { access_token, refresh_token } = await signTokens(user);
 
     res.cookie("access_token", access_token, accessTokenCookieOptions);
     res.cookie("refresh_token", refresh_token, refreshTokenCookieOptions);
     res.cookie("logged_in", true, {
       ...accessTokenCookieOptions,
-      httpOnly: true,
+      httpOnly: false,
     });
 
     res.status(200).json({
@@ -167,6 +201,36 @@ export const logoutHandler = async (
 
     res.status(200).json({
       status: "success",
+    });
+  } catch (err: any) {
+    next(err);
+  }
+};
+
+export const verifyEmailHandler = async (
+  req: Request<VerifyEmailInput>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const verificationCode = crypto
+      .createHash("sha256")
+      .update(req.params.verificationCode)
+      .digest("hex");
+
+    const user = await findUser({ verificationCode });
+
+    if (!user) {
+      return next(new AppError(401, "Could not verify email"));
+    }
+
+    user.verify = true;
+    user.verificationCode = null;
+    await user.save();
+
+    res.status(200).json({
+      status: "success",
+      message: "Email verified successfully",
     });
   } catch (err: any) {
     next(err);

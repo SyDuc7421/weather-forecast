@@ -1,6 +1,7 @@
 require("dotenv").config();
 import express, { NextFunction, Request, Response } from "express";
 import config from "config";
+import nodemailer from "nodemailer";
 import validateEnv from "./utils/validateEnv";
 import { AppDataSource } from "./utils/data-source";
 import redisClient from "./utils/connectRedis";
@@ -16,6 +17,11 @@ AppDataSource.initialize()
     validateEnv();
 
     const app = express();
+
+    // Tempalte engine
+
+    app.set("view engine", "pug");
+    app.set("views", `${__dirname}/views`);
 
     // Middleware
     app.use(
