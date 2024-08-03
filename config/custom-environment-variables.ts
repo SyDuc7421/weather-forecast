@@ -16,4 +16,6 @@ export default {
     port: "EMAIL_PORT",
     user: "EMAIL_USER",
   },
+
+  key: "WEATHER_API_KEY",
 };

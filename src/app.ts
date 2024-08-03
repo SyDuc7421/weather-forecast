@@ -10,6 +10,7 @@ import cors from "cors";
 import AppError from "./utils/appError";
 import authRoute from "./routes/auth.routes";
 import userRoute from "./routes/user.routes";
+import weatherRoute from "./routes/weather.routes";
 
 AppDataSource.initialize()
   .then(async () => {
@@ -41,6 +42,7 @@ AppDataSource.initialize()
 
     app.use("/api/auth", authRoute);
     app.use("/api/users", userRoute);
+    app.use("/api/weathers", weatherRoute);
 
     // Health checker
     app.get("/api/healthchecker", async (req: Request, res: Response) => {
