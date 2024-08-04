@@ -17,14 +17,7 @@ services:
       - '6379:6379'
     volumes:
       - redisDB:/data
-
-  app:
-    build: 
-      context: .
-    ports:
-      - "8080:8080"
-    env_file:
-      - .env
+      
 volumes:
   postgresDB:
   redisDB:
