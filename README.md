@@ -1,7 +1,6 @@
-# Awesome Project Build with TypeORM
+# Project Build with Docker and Nodejs
 
-Steps to run this project:
-
-1. Run `npm i` command
-2. Setup database settings inside `data-source.ts` file
-3. Run `npm start` command
+1. Run `docker compose up -d --build` command
+2. Create .env file and copy infomation from email
+3. Run `npm i` command
+4. Run `npm i` command

@@ -7,9 +7,9 @@
     "dev": "ts-node-dev --respawn --transpile-only --exit-child src/app.ts",
     "build": "npm i && tsc -p .",
     "typeorm": "ts-node ./node_modules/typeorm/cli",
-    "migrate": "rimraf build && npm run build && npm run typeorm -- -d ./src/utils/data-source.ts migration:generate ./src/migrations/added-entity",
-    "db:push": "rimraf build && npm run build && npm run typeorm migration:run -- -d ./src/utils/data-source.ts",
-    "start" : "node dist/src/app.js"
+    "migrate": "rimraf dist && npm run build && npm run typeorm -- -d ./src/utils/data-source.ts migration:generate ./src/migrations/added-entity",
+    "db:push": "rimraf dist && npm run build && npm run typeorm migration:run -- -d ./src/utils/data-source.ts",
+    "start": "node dist/src/app.js"
   },
   "author": "",
   "license": "ISC",
