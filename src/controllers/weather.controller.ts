@@ -7,6 +7,7 @@ import {
   locationProps,
   weatherProps,
 } from "../types/weather.type";
+import redisClient from "../utils/connectRedis";
 
 export const getWeather = async (
   req: Request<{}, GetWeatherInput>,
@@ -26,9 +27,6 @@ export const getWeather = async (
       `https://api.weatherapi.com/v1/forecast.json?${params.toString()}`
     );
 
-    console.log(
-      `https://api.weatherapi.com/v1/forecast.json?${params.toString()}`
-    );
     if (!response.ok) {
       return next(new AppError(400, "Faile to fetch forecast"));
     }
@@ -48,7 +46,7 @@ export const getWeather = async (
       },
       current: {
         time: forecast.current.last_update,
-        temp_c: forecast.current.last_update,
+        temp_c: forecast.current.temp_c,
         is_day: forecast.current.is_day,
         wind_kph: forecast.current.wind_kph,
         wind_dir: forecast.current.wind_dir,
@@ -64,6 +62,7 @@ export const getWeather = async (
       },
       forecast: {
         forecastday: forecast.forecast.forecastday.map((day: any) => ({
+          date: day.date,
           maxtemp_c: day.day.maxtemp_c,
           mintemp_c: day.day.mintemp_c,
           avgtemp_c: day.day.avgtemp_c,
@@ -79,8 +78,52 @@ export const getWeather = async (
         })),
       },
     };
+
+    const now = new Date();
+    const endOfDay = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      23,
+      59,
+      59
+    );
+    const ttl = Math.floor((endOfDay.getTime() - now.getTime()) / 1000);
+    //
+    redisClient.set(
+      "weather_history",
+      JSON.stringify({
+        forecast: filteredData,
+      }),
+      {
+        EX: ttl,
+      }
+    );
+
     res.status(200).json({
-      filteredData,
+      status: "success",
+      forecast: filteredData,
+    });
+  } catch (err: any) {
+    next(err);
+  }
+};
+
+export const historyWeather = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const history = await redisClient.get("weather_history");
+    if (!history) {
+      return next(new AppError(400, "History not found"));
+    }
+    const forecast = JSON.parse(history);
+
+    res.status(200).json({
+      status: "success",
+      forecast,
     });
   } catch (err: any) {
     next(err);

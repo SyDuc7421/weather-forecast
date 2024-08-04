@@ -22,6 +22,7 @@ export type locationProps = {
 };
 
 export type avarageWeatherProps = {
+  date: string;
   maxtemp_c: number;
   mintemp_c: number;
   avgtemp_c: number;
