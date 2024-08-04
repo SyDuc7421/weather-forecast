@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { User } from "../entities/user.entity";
 import { findUserById } from "../services/user.service";
 import AppError from "../utils/appError";
+import { locationProps, weatherProps } from "../types/weather.type";
 
 export const getMeHandler = async (
   req: Request,
@@ -28,11 +28,14 @@ export const subcribeNotify = async (
   next: NextFunction
 ) => {
   try {
+    const subcribePosition = req.params.subcribePosition;
+
     const currentUser = await findUserById(res.locals.user.id);
     if (!currentUser) {
       return next(new AppError(400, "User not found"));
     }
-    currentUser.subcribe = true;
+
+    currentUser.subcribe = subcribePosition;
     await currentUser.save();
 
     res.status(200).json({
@@ -56,7 +59,7 @@ export const unSubcribeNotify = async (
     if (!currentUser) {
       return next(new AppError(400, "User not found"));
     }
-    currentUser.subcribe = false;
+    currentUser.subcribe = null;
     await currentUser.save();
 
     res.status(200).json({

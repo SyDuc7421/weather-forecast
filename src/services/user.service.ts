@@ -1,5 +1,5 @@
 import config from "config";
-import { DeepPartial } from "typeorm";
+import { DeepPartial, IsNull, Not } from "typeorm";
 import { User } from "../entities/user.entity";
 import { AppDataSource } from "../utils/data-source";
 import redisClient from "../utils/connectRedis";
@@ -21,6 +21,10 @@ export const findUserById = async (userId: string) => {
 
 export const findUser = async (query: Object) => {
   return await userRepository.findOneBy(query);
+};
+
+export const findUserSubcribe = async () => {
+  return await userRepository.find({ where: { subcribe: Not(IsNull()) } });
 };
 
 export const signTokens = async (user: User) => {

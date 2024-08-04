@@ -45,7 +45,7 @@ export const getWeather = async (
         localtime: forecast.location.localtime,
       },
       current: {
-        time: forecast.current.last_update,
+        time: forecast.current.last_updated,
         temp_c: forecast.current.temp_c,
         is_day: forecast.current.is_day,
         wind_kph: forecast.current.wind_kph,

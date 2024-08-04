@@ -3,6 +3,7 @@ import { User } from "../entities/user.entity";
 import nodemailer from "nodemailer";
 import pug from "pug";
 import { convert } from "html-to-text";
+import { weatherProps } from "../types/weather.type";
 
 const smtp = config.get<{
   host: string;
@@ -15,11 +16,15 @@ export default class Email {
   name: string;
   to: string;
   from: string;
+  weather: weatherProps;
+  position: string;
 
-  constructor(public user: User, public url: string) {
+  constructor(public user: User, public url: string, public current?: string) {
     this.name = user.name;
     this.to = user.email;
     this.from = `Weather forecast ${config.get<string>("emailFrom")}`;
+    this.weather = current && JSON.parse(current);
+    this.position = user.subcribe || "Not subcribe";
   }
 
   private newTransport() {
@@ -38,6 +43,8 @@ export default class Email {
       name: this.name,
       subject,
       url: this.url,
+      position: this.position,
+      weather: this.weather,
     });
 
     // mail Options
@@ -55,5 +62,9 @@ export default class Email {
 
   async sendVerificationCode() {
     await this.send("verificationCode", "Weather forecast verification code");
+  }
+
+  async sendWeatherToday() {
+    await this.send("weatherToday", "Today's Weather on Weather forecast");
   }
 }

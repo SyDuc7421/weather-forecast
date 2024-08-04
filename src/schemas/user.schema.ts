@@ -41,6 +41,13 @@ export const verifyEmailSchema = object({
   }),
 });
 
+export const subcribeSchema = object({
+  params: object({
+    subcribePosition: string(),
+  }),
+});
+
+export type SubcribeInput = TypeOf<typeof subcribeSchema>["params"];
 export type VerifyEmailInput = TypeOf<typeof verifyEmailSchema>["params"];
 export type CreateUserInput = TypeOf<typeof createUserSchema>["body"];
 export type LoginUserInput = TypeOf<typeof loginUserSchema>["body"];

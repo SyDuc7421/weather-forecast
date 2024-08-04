@@ -1,0 +1,9 @@
+extends base
+
+block content
+  h1 Today's Weather at #{position}
+  p Temperature: #{weather.temp_c}°C
+  p Humidity: #{weather.humidity}%
+  p Condition: #{weather.condition.text}
+
+  p Have a great day!

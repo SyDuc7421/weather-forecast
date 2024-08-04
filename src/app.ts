@@ -11,6 +11,7 @@ import AppError from "./utils/appError";
 import authRoute from "./routes/auth.routes";
 import userRoute from "./routes/user.routes";
 import weatherRoute from "./routes/weather.routes";
+import { Scheduler } from "./utils/scheduler";
 
 AppDataSource.initialize()
   .then(async () => {
@@ -18,6 +19,8 @@ AppDataSource.initialize()
     validateEnv();
 
     const app = express();
+
+    Scheduler();
 
     // Tempalte engine
 
