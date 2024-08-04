@@ -13,8 +13,15 @@ const validateEnv = () => {
 
     EMAIL_USER: str(),
     EMAIL_PASS: str(),
+    EMAIL_FROM: str(),
     EMAIL_HOST: str(),
     EMAIL_PORT: port(),
+
+    WEATHER_API_KEY: str(),
+
+    REDIS_HOST: str(),
+
+    FRONT_END_BASE_URL: str(),
   });
 };
 

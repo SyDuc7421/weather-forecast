@@ -89,16 +89,10 @@ export const getWeather = async (
       59
     );
     const ttl = Math.floor((endOfDay.getTime() - now.getTime()) / 1000);
-    //
-    redisClient.set(
-      "weather_history",
-      JSON.stringify({
-        forecast: filteredData,
-      }),
-      {
-        EX: ttl,
-      }
-    );
+    // Store temp data for history
+    redisClient.set("weather_history", JSON.stringify(filteredData), {
+      EX: ttl,
+    });
 
     res.status(200).json({
       status: "success",

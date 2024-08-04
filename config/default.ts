@@ -1,7 +1,7 @@
 export default {
-  origin: "http://localhost:5173",
+  origin: process.env.FRONT_END_BASE_URL,
   accessTokenExpiresIn: 15,
   refreshTokenExpiresIn: 60,
   redisCacheExpiresIn: 60,
-  emailFrom: "hosiduc2002.chem@gmail.com",
+  emailFrom: process.env.EMAIL_FROM,
 };

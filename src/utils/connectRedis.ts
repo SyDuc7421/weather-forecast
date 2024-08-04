@@ -1,6 +1,9 @@
 import { createClient } from "redis";
+import config from "config";
 
-const redisUrl = "redis://localhost:6379";
+const REDIS_HOST = config.get<{ host: string }>("redisConfig");
+
+const redisUrl = `redis://${REDIS_HOST.host}:6379`;
 
 const redisClient = createClient({
   url: redisUrl,
