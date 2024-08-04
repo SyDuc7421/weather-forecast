@@ -1,7 +1,6 @@
 require("dotenv").config();
 import express, { NextFunction, Request, Response } from "express";
 import config from "config";
-import nodemailer from "nodemailer";
 import validateEnv from "./utils/validateEnv";
 import { AppDataSource } from "./utils/data-source";
 import redisClient from "./utils/connectRedis";
