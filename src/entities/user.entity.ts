@@ -44,6 +44,11 @@ export class User extends Model {
   })
   verify: boolean;
 
+  @Column({
+    default: false,
+  })
+  subcribe: boolean;
+
   @Index("verificationCode_index")
   @Column({
     type: "text",
