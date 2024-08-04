@@ -5,7 +5,7 @@
   "main": "./src/app.ts",
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only --exit-child src/app.ts",
-    "build": "npm i && tsc -p .",
+    "build": "tsc -p .",
     "typeorm": "ts-node ./node_modules/typeorm/cli",
     "migrate": "rimraf dist && npm run build && npm run typeorm -- -d ./src/utils/data-source.ts migration:generate ./src/migrations/added-entity",
     "db:push": "rimraf dist && npm run build && npm run typeorm migration:run -- -d ./src/utils/data-source.ts",
