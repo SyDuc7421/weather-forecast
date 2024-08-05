@@ -1,6 +1,5 @@
 import cron from "node-cron";
 import { findUserSubcribe } from "../services/user.service";
-import { User } from "../entities/user.entity";
 import config from "config";
 import { locationProps, weatherProps } from "../types/weather.type";
 import Email from "./email";
